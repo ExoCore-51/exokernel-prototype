@@ -10,10 +10,11 @@ This is the central hub for our Operating Systems project. We are building an Ex
 
 ---
 
-### 📝 Quick Rules for the Team
-1. **Branching**: Do not push directly to the main branch. Create a branch like "research-yourname" first to keep the code safe.
-2. **Updates**: Upload your individual research findings to the "findings" folder within the repository.
-3. **Collaboration**: Use the Pull Request system to review each other's work before merging it into the main project.
+### 📝 Project Workflow & Rules
+1. **The Dev Folder**: All teammates must push their work into the `dev/` folder. Do not push directly to the root directory.
+2. **Branching**: Do not push directly to the `main` branch. Create a branch like `dev-yourname` first to keep the work safe.
+3. **Merging**: I will be responsible for reviewing all code and documentation. Once everything is verified, I will merge it from the `dev/` folder into the main project.
+4. **Research**: Upload your individual research findings to the `dev/findings/` folder within the repository.
 
 ---
 
