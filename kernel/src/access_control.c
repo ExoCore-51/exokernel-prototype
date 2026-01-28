@@ -11,6 +11,7 @@
  */
 
 #include "access_control.h"
+#include "logging.h"
 #include <stdio.h>
 
 /* =============================================================================
@@ -34,6 +35,7 @@ AccessResult check_access(BindingTable* table, uint32_t app_id,
     /* Step 1: Validate inputs */
     if (table == NULL || app_id == 0 || requested_permission == PERM_NONE) {
         printf("[ACCESS] Invalid parameters for access check\n");
+        log_json("kernel", "access_check", app_id, page, requested_permission, "ERROR", "Invalid parameters", 0, table ? table->count : 0);
         return ACCESS_INVALID_PARAMS;
     }
     
@@ -44,6 +46,7 @@ AccessResult check_access(BindingTable* table, uint32_t app_id,
     if (binding == NULL) {
         printf("[ACCESS] DENIED: App %u has no binding for page %u\n",
                app_id, page);
+        log_json("kernel", "access_check", app_id, page, requested_permission, "NOT_FOUND", "No binding", 0, table->count);
         return ACCESS_NO_BINDING;
     }
     
@@ -66,11 +69,13 @@ AccessResult check_access(BindingTable* table, uint32_t app_id,
                (requested_permission == PERM_WRITE)   ? "WRITE" :
                (requested_permission == PERM_EXECUTE) ? "EXECUTE" : "ACCESS",
                page);
+        log_json("kernel", "access_check", app_id, page, requested_permission, "SUCCESS", "Access granted", 1, table->count);
         return ACCESS_GRANTED;
     }
     
     printf("[ACCESS] DENIED: App %u lacks permission 0x%02X for page %u\n",
            app_id, requested_permission, page);
+    log_json("kernel", "access_check", app_id, page, requested_permission, "DENIED", "Access denied", 0, table->count);
     return ACCESS_DENIED;
 }
 

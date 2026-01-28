@@ -18,6 +18,8 @@
 #include "secure_binding.h"
 #include "access_control.h"
 #include "syscall.h"
+#include "memory.h"
+#include "logging.h"
 
 /* Kernel version */
 #define KERNEL_VERSION_MAJOR 0
@@ -40,6 +42,7 @@ typedef struct {
     BindingTable bindings;  /* The secure binding table */
     int          is_running; /* Is the kernel running? */
     uint32_t     syscall_count; /* Number of syscalls processed */
+    MemoryState  memory;     /* Physical memory manager state */
 } KernelState;
 
 /* Global kernel state (extern declaration) */

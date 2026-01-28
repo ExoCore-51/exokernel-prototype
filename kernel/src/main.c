@@ -12,6 +12,7 @@
  */
 
 #include "kernel.h"
+#include "libos.h"
 #include <stdio.h>
 
 /*
@@ -30,6 +31,15 @@ int main(int argc, char* argv[]) {
     
     /* Run the kernel (demonstration) */
     kernel_run();
+    
+    /* === LibOS demo: allocate/bind/use/free a page for App 10 === */
+    libos_run_app(10, "demo_app", (libos_app_entry)0);
+    uint32_t page = libos_alloc_and_bind(10, PERM_READ | PERM_WRITE);
+    if (page != INVALID_PAGE) {
+        /* Check access then clean up */
+        libos_check(10, page, PERM_READ);
+        libos_free_and_unbind(10, page);
+    }
     
     /* Shutdown */
     kernel_shutdown();

@@ -53,3 +53,36 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# ===============================
+# Project-specific ignores
+# ===============================
+
+# Kernel build directories and artifacts
+kernel/build/
+kernel/*.log
+kernel/src/*.o
+kernel/src/*.obj
+kernel/tests/*.o
+
+# Local toolchains copied into repo (avoid committing compilers)
+mingw64/
+msys64/
+w64devkit/
+
+# Editor/IDE settings
+.vscode/
+.vscode-test/
+.idea/
+*.code-workspace
+
+# OS-specific
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Temporaries
+*.tmp
+*.temp
+*.swp
+*.swo

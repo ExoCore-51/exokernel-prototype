@@ -26,9 +26,12 @@ BUILD_DIR = build
 
 # Source files
 SOURCES = $(SRC_DIR)/secure_binding.c \
-          $(SRC_DIR)/access_control.c \
-          $(SRC_DIR)/syscall.c \
-          $(SRC_DIR)/kernel.c
+		  $(SRC_DIR)/access_control.c \
+		  $(SRC_DIR)/syscall.c \
+		  $(SRC_DIR)/kernel.c \
+		  $(SRC_DIR)/memory.c \
+		  $(SRC_DIR)/logging.c \
+		  $(SRC_DIR)/libos.c
 
 # Main entry point (separate from sources for testing)
 MAIN = $(SRC_DIR)/main.c
