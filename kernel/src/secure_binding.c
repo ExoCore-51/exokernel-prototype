@@ -16,6 +16,7 @@
  */
 
 #include "secure_binding.h"
+#include "logging.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -40,6 +41,7 @@ void binding_table_init(BindingTable* table) {
     table->count = 0;
     
     printf("[KERNEL] Binding table initialized (capacity: %d)\n", MAX_BINDINGS);
+    log_json("kernel", "binding_table_init", 0, 0, 0, "OK", "Binding table initialized", 0, table->count);
 }
 
 /*
@@ -98,6 +100,7 @@ bool create_binding(BindingTable* table, uint32_t app_id,
                    (permissions & PERM_READ)    ? 'R' : '-',
                    (permissions & PERM_WRITE)   ? 'W' : '-',
                    (permissions & PERM_EXECUTE) ? 'X' : '-');
+            log_json("kernel", "binding_created", app_id, page, permissions, "SUCCESS", "Binding created", 0, table->count);
             
             return true;
         }
@@ -134,6 +137,7 @@ bool remove_binding(BindingTable* table, uint32_t app_id, uint32_t page) {
     
     printf("[KERNEL] Removed binding: App %u no longer has access to page %u\n",
            app_id, page);
+    log_json("kernel", "binding_removed", app_id, page, PERM_NONE, "SUCCESS", "Binding removed", 0, table->count);
     
     return true;
 }

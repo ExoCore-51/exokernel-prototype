@@ -39,7 +39,9 @@ typedef enum {
     SYS_UNBIND,     /* Release a secure binding */
     SYS_ACCESS,     /* Check if access is permitted (for LibOS validation) */
     SYS_INFO,       /* Get kernel information (debugging) */
-    SYS_SHUTDOWN    /* Request kernel shutdown */
+    SYS_SHUTDOWN,   /* Request kernel shutdown */
+    SYS_ALLOC_PAGE, /* Allocate a physical memory page */
+    SYS_FREE_PAGE   /* Free a previously allocated page */
 } SyscallType;
 
 /*

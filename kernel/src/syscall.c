@@ -12,6 +12,9 @@
  */
 
 #include "syscall.h"
+#include "kernel.h"
+#include "memory.h"
+#include "logging.h"
 #include <stdio.h>
 
 /* =============================================================================
@@ -30,7 +33,9 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
     SyscallResponse response;
     
     printf("\n[SYSCALL] Received: %s from App %u\n",
-           syscall_type_to_string(request.type), request.app_id);
+        syscall_type_to_string(request.type), request.app_id);
+    log_json("kernel", "syscall_received", request.app_id, request.page, request.permissions,
+          "OK", syscall_type_to_string(request.type), 0, g_kernel.syscall_count);
     
     /* Validate common parameters */
     if (table == NULL) {
@@ -54,10 +59,12 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
                 response.status = SYSCALL_SUCCESS;
                 response.data = request.page;
                 response.message = "Binding created successfully";
+                log_json("kernel", "sys_bind", request.app_id, request.page, request.permissions, "SUCCESS", response.message, response.data, table->count);
             } else {
                 response.status = SYSCALL_ERROR;
                 response.data = 0;
                 response.message = "Failed to create binding";
+                log_json("kernel", "sys_bind", request.app_id, request.page, request.permissions, "ERROR", response.message, response.data, table->count);
             }
             break;
         }
@@ -72,10 +79,12 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
                 response.status = SYSCALL_SUCCESS;
                 response.data = request.page;
                 response.message = "Binding removed successfully";
+                log_json("kernel", "sys_unbind", request.app_id, request.page, 0, "SUCCESS", response.message, response.data, table->count);
             } else {
                 response.status = SYSCALL_NOT_FOUND;
                 response.data = 0;
                 response.message = "Binding not found";
+                log_json("kernel", "sys_unbind", request.app_id, request.page, 0, "NOT_FOUND", response.message, response.data, table->count);
             }
             break;
         }
@@ -91,14 +100,17 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
                 response.status = SYSCALL_SUCCESS;
                 response.data = 1;
                 response.message = "Access granted";
+                log_json("kernel", "sys_access", request.app_id, request.page, request.permissions, "SUCCESS", response.message, response.data, table->count);
             } else if (result == ACCESS_NO_BINDING) {
                 response.status = SYSCALL_NOT_FOUND;
                 response.data = 0;
                 response.message = "No binding exists";
+                log_json("kernel", "sys_access", request.app_id, request.page, request.permissions, "NOT_FOUND", response.message, response.data, table->count);
             } else {
                 response.status = SYSCALL_PERMISSION_DENIED;
                 response.data = 0;
                 response.message = "Access denied";
+                log_json("kernel", "sys_access", request.app_id, request.page, request.permissions, "DENIED", response.message, response.data, table->count);
             }
             break;
         }
@@ -112,6 +124,7 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
             response.data = table->count;  /* Return number of active bindings */
             response.message = "Kernel info retrieved";
             printf("[SYSCALL] Active bindings: %u\n", table->count);
+            log_json("kernel", "sys_info", request.app_id, 0, 0, "SUCCESS", response.message, response.data, table->count);
             break;
         }
         
@@ -124,6 +137,47 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
             response.data = 0;
             response.message = "Shutdown acknowledged";
             printf("[SYSCALL] Shutdown requested by App %u\n", request.app_id);
+            log_json("kernel", "sys_shutdown", request.app_id, 0, 0, "SUCCESS", response.message, response.data, table->count);
+            break;
+        }
+
+        /* ============================================================
+         * SYS_ALLOC_PAGE: Allocate a physical page for the app
+         * ============================================================
+         */
+        case SYS_ALLOC_PAGE: {
+            uint32_t page = memory_alloc_page(&g_kernel.memory, request.app_id);
+            if (page != INVALID_PAGE) {
+                response.status = SYSCALL_SUCCESS;
+                response.data = page;
+                response.message = "Page allocated";
+                log_json("kernel", "sys_alloc_page", request.app_id, page, 0, "SUCCESS", response.message, response.data, memory_free_pages(&g_kernel.memory));
+            } else {
+                response.status = SYSCALL_ERROR;
+                response.data = INVALID_PAGE;
+                response.message = "Page allocation failed";
+                log_json("kernel", "sys_alloc_page", request.app_id, INVALID_PAGE, 0, "ERROR", response.message, response.data, memory_free_pages(&g_kernel.memory));
+            }
+            break;
+        }
+
+        /* ============================================================
+         * SYS_FREE_PAGE: Free a physical page owned by the app
+         * ============================================================
+         */
+        case SYS_FREE_PAGE: {
+            bool ok = memory_free_page(&g_kernel.memory, request.app_id, request.page);
+            if (ok) {
+                response.status = SYSCALL_SUCCESS;
+                response.data = request.page;
+                response.message = "Page freed";
+                log_json("kernel", "sys_free_page", request.app_id, request.page, 0, "SUCCESS", response.message, response.data, memory_free_pages(&g_kernel.memory));
+            } else {
+                response.status = SYSCALL_ERROR;
+                response.data = 0;
+                response.message = "Failed to free page";
+                log_json("kernel", "sys_free_page", request.app_id, request.page, 0, "ERROR", response.message, response.data, memory_free_pages(&g_kernel.memory));
+            }
             break;
         }
         
@@ -142,6 +196,8 @@ SyscallResponse syscall_handler(BindingTable* table, SyscallRequest request) {
     
     printf("[SYSCALL] Response: %s - %s\n",
            syscall_status_to_string(response.status), response.message);
+    log_json("kernel", "syscall_response", request.app_id, response.data, request.permissions,
+             syscall_status_to_string(response.status), response.message, response.data, g_kernel.syscall_count);
     
     return response;
 }
@@ -156,6 +212,8 @@ const char* syscall_type_to_string(SyscallType type) {
         case SYS_ACCESS:   return "SYS_ACCESS";
         case SYS_INFO:     return "SYS_INFO";
         case SYS_SHUTDOWN: return "SYS_SHUTDOWN";
+        case SYS_ALLOC_PAGE: return "SYS_ALLOC_PAGE";
+        case SYS_FREE_PAGE:  return "SYS_FREE_PAGE";
         default:           return "UNKNOWN";
     }
 }

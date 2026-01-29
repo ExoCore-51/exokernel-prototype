@@ -35,6 +35,8 @@
 *.i*86
 *.x86_64
 *.hex
+kernel/kernel_demo.exe
+kernel/test_kernel.exe
 
 # Debug files
 *.dSYM/
@@ -53,3 +55,45 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# ===============================
+# Project-specific ignores
+# ===============================
+
+# Kernel build directories and artifacts
+kernel/build/
+kernel/*.log
+kernel/src/*.o
+kernel/src/*.obj
+kernel/tests/*.o
+kernel/tests/*.exe
+kernel/*.exe
+
+# Local toolchains copied into repo (avoid committing compilers)
+mingw64/
+msys64/
+w64devkit/
+.cache/
+bin/
+dist/
+Debug/
+Release/
+
+# Editor/IDE settings
+.vscode/
+.vscode-test/
+.idea/
+*.code-workspace
+
+# OS-specific
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Temporaries
+*.tmp
+*.temp
+*.swp
+*.swo
+
+mingw64

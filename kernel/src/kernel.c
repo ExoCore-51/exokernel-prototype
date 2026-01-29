@@ -11,6 +11,7 @@
  */
 
 #include "kernel.h"
+#include "logging.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -52,6 +53,8 @@ int kernel_init(void) {
     
     /* Initialize the binding table */
     binding_table_init(&g_kernel.bindings);
+    /* Initialize physical memory */
+    memory_init(&g_kernel.memory);
     
     /* Set initial state */
     g_kernel.is_running = 1;
@@ -59,6 +62,7 @@ int kernel_init(void) {
     
     printf("[KERNEL] Kernel initialized successfully!\n");
     printf("[KERNEL] Ready to accept system calls from LibOS.\n\n");
+    log_json("kernel", "kernel_init", 0, 0, 0, "OK", "Kernel initialized", 0, g_kernel.syscall_count);
     
     return 0;
 }
@@ -81,6 +85,7 @@ SyscallResponse kernel_syscall(SyscallRequest request) {
  */
 void kernel_run(void) {
     printf("[KERNEL] Entering main loop...\n\n");
+    log_json("kernel", "kernel_run", 0, 0, 0, "OK", "Kernel main loop start", 0, g_kernel.syscall_count);
     
     /* 
      * In a real kernel, this would be an infinite loop waiting for
@@ -179,6 +184,7 @@ void kernel_run(void) {
     
     printf("\n[KERNEL] Total syscalls processed: %u\n", g_kernel.syscall_count);
     printf("[KERNEL] Demo complete.\n\n");
+    log_json("kernel", "kernel_run_complete", 0, 0, 0, "OK", "Kernel main loop complete", 0, g_kernel.syscall_count);
 }
 
 /*
@@ -196,4 +202,5 @@ void kernel_shutdown(void) {
     printf("[KERNEL] Total syscalls processed during session: %u\n", 
            g_kernel.syscall_count);
     printf("\nGoodbye!\n\n");
+    log_json("kernel", "kernel_shutdown", 0, 0, 0, "OK", "Kernel shutdown", 0, g_kernel.syscall_count);
 }
