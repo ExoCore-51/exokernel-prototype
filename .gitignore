@@ -95,3 +95,5 @@ $RECYCLE.BIN/
 *.temp
 *.swp
 *.swo
+
+mingw64
