@@ -30,4 +30,10 @@ void log_json(const char* component,
 /* Convert permissions to RWX string */
 const char* perms_to_string(uint8_t p);
 
+/* Initialize log file output */
+void log_init(void);
+
+/* Close log file */
+void log_close(void);
+
 #endif /* LOGGING_H */

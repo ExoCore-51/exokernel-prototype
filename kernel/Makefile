@@ -31,7 +31,8 @@ SOURCES = $(SRC_DIR)/secure_binding.c \
 		  $(SRC_DIR)/kernel.c \
 		  $(SRC_DIR)/memory.c \
 		  $(SRC_DIR)/logging.c \
-		  $(SRC_DIR)/libos.c
+		  $(SRC_DIR)/libos.c \
+		  $(SRC_DIR)/cli.c
 
 # Main entry point (separate from sources for testing)
 MAIN = $(SRC_DIR)/main.c
