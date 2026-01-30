@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exokernel Monitor - Group 51</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>Exokernel Monitor</h1>
+            </div>
+            <div class="status-badge" id="status-badge">
+                <span class="status-dot"></span>
+                <span id="status-text">Waiting for log file...</span>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="syscall-count">0</span>
+                    <span class="stat-label">Syscalls</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔗</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="binding-count">0</span>
+                    <span class="stat-label">Active Bindings</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="event-count">0</span>
+                    <span class="stat-label">Events Logged</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💾</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="free-pages">--</span>
+                    <span class="stat-label">Free Pages</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Bindings Table -->
+            <section class="panel bindings-panel">
+                <div class="panel-header">
+                    <h2>🔗 Active Bindings</h2>
+                    <button class="btn-refresh" onclick="clearBindings()">Clear</button>
+                </div>
+                <div class="table-container">
+                    <table id="bindings-table">
+                        <thead>
+                            <tr>
+                                <th>App ID</th>
+                                <th>Page</th>
+                                <th>Permissions</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bindings-body">
+                            <tr class="empty-row">
+                                <td colspan="4">No active bindings</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Event Log -->
+            <section class="panel log-panel">
+                <div class="panel-header">
+                    <h2>📜 Event Log</h2>
+                    <button class="btn-refresh" onclick="clearEvents()">Clear</button>
+                </div>
+                <div class="log-container" id="log-container">
+                    <div class="log-entry log-info">
+                        <span class="log-time">--:--:--</span>
+                        <span class="log-component">[monitor]</span>
+                        <span class="log-message">Waiting for events... Load a kernel.log file to begin.</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- File Input -->
+        <section class="file-input-section">
+            <label for="log-file" class="file-label">
+                <span class="file-icon">📁</span>
+                <span>Load kernel.log file</span>
+                <input type="file" id="log-file" accept=".log,.json,.txt" onchange="loadLogFile(event)">
+            </label>
+            <button class="btn-reload" onclick="reloadFile()">🔄 Reload</button>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Exokernel Prototype - Group 51 - 2026</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -49,6 +49,9 @@ void kernel_print_version(void) {
 int kernel_init(void) {
     kernel_print_version();
     
+    /* Initialize logging (file output) */
+    log_init();
+    
     printf("[KERNEL] Initializing kernel...\n");
     
     /* Initialize the binding table */
@@ -203,4 +206,7 @@ void kernel_shutdown(void) {
            g_kernel.syscall_count);
     printf("\nGoodbye!\n\n");
     log_json("kernel", "kernel_shutdown", 0, 0, 0, "OK", "Kernel shutdown", 0, g_kernel.syscall_count);
+    
+    /* Close log file */
+    log_close();
 }

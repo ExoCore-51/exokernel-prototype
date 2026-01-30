@@ -11,7 +11,7 @@ if errorlevel 1 if exist C:\w64devkit\bin\gcc.exe set PATH=C:\w64devkit\bin;%PAT
 cd /d "%~dp0"
 gcc -Wall -Wextra -I./include -o kernel_demo.exe ^
     src/secure_binding.c src/access_control.c src/syscall.c src/kernel.c ^
-    src/memory.c src/logging.c src/libos.c src/main.c
+    src/memory.c src/logging.c src/libos.c src/cli.c src/main.c
 if %ERRORLEVEL% EQU 0 (
     echo.
     echo ========================================
